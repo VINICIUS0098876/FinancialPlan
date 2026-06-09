@@ -23,6 +23,7 @@ jobs:
       with:
         node-version: 20
         cache: 'npm'
+        cache-dependency-path: 'Back-End/package-lock.json'
 
     # Passo 3: Instala todas as dependências do seu package.json
     - name: Install dependencies
