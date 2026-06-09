@@ -4,18 +4,29 @@ import prismaClient from '../conf/index';
 import bcrypt from 'bcryptjs';
 
 // Aqui o jest irá vigiar o banco de dados sem tocar no banco de dados real;
-jest.mock('../conf/index', () => ({
-    __esModule: true,
-    default: {
+jest.mock('../conf/index', () => {
+    const mockPrisma = {
         users: {
             findUnique: jest.fn(),
             create: jest.fn(),
             update: jest.fn(),
             delete: jest.fn(),
             findMany: jest.fn()
+        },
+        exchange_goals: {
+            deleteMany: jest.fn()
         }
-    }
-}))
+    };
+
+    return {
+        __esModule: true,
+        default: {
+            ...mockPrisma,
+            // Ensina o Jest a executar a transação chamando o callback interno
+            $transaction: jest.fn(async (callback) => await callback(mockPrisma))
+        }
+    };
+});
 
 describe('CreateUserService', () => {
 
@@ -62,7 +73,7 @@ it('Deve ser capaz de criar um novo usuário com sucesso!', async () => {
         // Aqui estamos verificando se o service lance um Erro (throw new Error)
         await expect(createUserService.execute('Vinicius Guimarães Roberto', 'vinicius@gmail.com', 'password123')).rejects.toThrow('Credenciais de autenticação incorretas!!')
     })
-})
+});
 
 describe('UpdateUserService', () => {
 
