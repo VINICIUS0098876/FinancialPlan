@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model checklist_items {
+  id_checklist_item String                  @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  id_exchange_goal  String?                 @db.VarChar(36)
+  title             String                  @db.VarChar(150)
+  description       String?                 @db.Text
+  status            checklist_items_status?
+  due_date          DateTime?               @db.Date
+  created_at        DateTime?               @default(now()) @db.DateTime(0)
+  exchange_goals    exchange_goals?         @relation(fields: [id_exchange_goal], references: [id_exchange_goal], onDelete: NoAction, onUpdate: NoAction, map: "fk_checklist_items_exchange_goals")
+
+  @@index([id_exchange_goal], map: "fk_checklist_items_exchange_goals")
+}
+
+model exchange_goals {
+  id_exchange_goal String            @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  id_user          String?           @db.VarChar(36)
+  destination      String            @db.VarChar(100)
+  target_currency  String            @db.VarChar(3)
+  amount_needed    Decimal           @db.Decimal(12, 2)
+  deadline         DateTime          @db.Date
+  created_at       DateTime?         @default(now()) @db.DateTime(0)
+  checklist_items  checklist_items[]
+  users            users?            @relation(fields: [id_user], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "fk_exchange_goals_users")
+  transactions     transactions[]
+
+  @@index([id_user], map: "fk_exchange_goals_users")
+}
+
+model transactions {
+  id_transaction   String                 @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  id_exchange_goal String?                @db.VarChar(36)
+  description      String                 @db.VarChar(255)
+  amount_brl       Decimal                @db.Decimal(12, 2)
+  exchange_rate    Decimal                @db.Decimal(10, 4)
+  amount_foreign   Decimal                @db.Decimal(12, 2)
+  platform         transactions_platform?
+  created_at       DateTime?              @default(now()) @db.DateTime(0)
+  exchange_goals   exchange_goals?        @relation(fields: [id_exchange_goal], references: [id_exchange_goal], onDelete: NoAction, onUpdate: NoAction, map: "fk_transactions_exchange_goals")
+
+  @@index([id_exchange_goal], map: "fk_transactions_exchange_goals")
+}
+
+model users {
+  id_user        String           @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  name           String           @db.VarChar(150)
+  email          String           @unique(map: "email")
+  password       String           @db.VarChar(255)
+  created_at     DateTime?        @default(now()) @db.DateTime(0)
+  update_at      DateTime?        @db.DateTime(0)
+  exchange_goals exchange_goals[]
+}
+
+enum checklist_items_status {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum transactions_platform {
+  WISE
+  NOMAD
+  CASH
+  OTHER
+}
