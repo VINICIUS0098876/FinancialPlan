@@ -19,6 +19,7 @@ import {
   SUCCESS_LOGIN_ITEM,
   SUCCESS_UPDATED_ITEM,
   ERROR_INVALID_CREDENTIALS,
+  ERROR_CONFLICT,
 } from "../utils/message";
 
 export class CreateUserController{
@@ -36,7 +37,16 @@ export class CreateUserController{
 
             return res.status(201).json({ message: SUCCESS_CREATED_ITEM.message, user });
 
-        }catch(error){
+        }catch(error: any){
+            if (error.message === ERROR_REQUIRED_FIELDS.message || error.message === ERROR_INVALID_ID.message) {
+                return res.status(400).json({ message: error.message });
+            }
+            if (error.message === ERROR_NOT_FOUND.message) {
+                return res.status(404).json({ message: error.message });
+            }
+            if (error.message === ERROR_INVALID_CREDENTIALS.message) {
+                return res.status(409).json({ message: ERROR_CONFLICT.message }); 
+            }
             console.error('Error creating user:', error);
             return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
         }
@@ -71,7 +81,13 @@ export class UpdateUserController{
 
             return res.status(200).json({ message: SUCCESS_UPDATED_ITEM.message, user });
 
-        }catch(error){
+        }catch(error: any){
+            if (error.message === ERROR_REQUIRED_FIELDS.message || error.message === ERROR_INVALID_ID.message) {
+                return res.status(400).json({ message: error.message });
+            }
+            if (error.message === ERROR_NOT_FOUND.message) {
+                return res.status(404).json({ message: error.message });
+            }
             console.error('Error updating user:', error);
             return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
         }
@@ -91,7 +107,10 @@ export class GetUserController{
 
             return res.status(200).json(user);
 
-        }catch(error){
+        }catch(error: any){
+            if (error.message === ERROR_NOT_FOUND.message) {
+                return res.status(404).json({ message: error.message });
+            }
             console.error('Error getting users:', error);
             return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
         }
@@ -117,7 +136,13 @@ export class GetUserByIdController{
 
             return res.status(200).json(user);
 
-        }catch(error){
+        }catch(error: any){
+            if (error.message === ERROR_NOT_FOUND.message) {
+                return res.status(404).json({ message: error.message });
+            }
+            if (error.message === ERROR_INVALID_ID.message) {
+                return res.status(400).json({ message: error.message });
+            }
             console.error('Error getting user by ID:', error);
             return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
     }
@@ -172,7 +197,14 @@ export class LoginUserController{
 
             return res.status(200).json({ message: SUCCESS_LOGIN_ITEM.message, token: user.token });
         
-        }catch(error){
+        }catch(error: any){
+            if (error.message === ERROR_REQUIRED_FIELDS.message) {
+            return res.status(400).json({ message: error.message });
+        }
+        
+        if (error.message === ERROR_INVALID_CREDENTIALS.message) {
+            return res.status(401).json({ message: error.message });
+        }
             console.error('Error logging in user:', error);
             return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
         }

@@ -43,6 +43,12 @@ export const ERROR_FORBIDDEN = {
   message: "Você não tem permissão para acessar este recurso!!",
 };
 
+export const ERROR_CONFLICT = {
+  status: false,
+  status_code: 409,
+  message: "Não foi possível concluir a requisição devido a um conflito, o registro já existe no sistema!!",
+};
+
 // Mensagens de Sucesso
 export const SUCCESS_CREATED_ITEM = {
   status: true,

@@ -94,15 +94,29 @@ export class DeleteUserService{
                 throw new Error(ERROR_INVALID_ID.message);
             }
 
-            const user = await prismaClient.users.delete({
+            // Utilizamos $transaction para garantir que o usuario seja deletado independentemente se tiver algo relacionado ao usuario ou não.
+        const user = await prismaClient.$transaction(async (tx) => {
+
+            await tx.exchange_goals.deleteMany({
                 where: {
                     id_user: id_user
                 }
             })
 
+            const deletedUser = await tx.users.delete({
+                where: {
+                    id_user: id_user
+                }
+            })
+
+            return deletedUser
+
+        })
+
             return user
 
         }catch(error){
+            console.error('Error deleting user:', error);
             throw new Error(ERROR_INTERNAL_SERVER_DB.message);
         }
     }
@@ -113,15 +127,21 @@ export class GetUserService{
         try{
             const user = await prismaClient.users.findMany()
 
+            if(user.length === 0){
+                throw new Error(ERROR_NOT_FOUND.message);
+            }
+
             return user
 
-        }catch(error){
+        }catch(error: any){
+            if (error.message === ERROR_NOT_FOUND.message) {
+                throw error;
+            }
             console.error('Error fetching users:', error);
             throw new Error(ERROR_INTERNAL_SERVER_DB.message);
         }
     }
 }
-
 
 export class GetUserByIdService{
     async execute(id_user: string){
@@ -157,17 +177,11 @@ export class LoginUserService{
                 where: { email: email }
             })
 
-            console.log("Usuário encontrado:", user);
-
             if(!user){
                 throw new Error(ERROR_INVALID_CREDENTIALS.message);
             }
 
-            console.log("Senha digitada no Insomnia:", password);
-console.log("Hash salvo no banco:", user.password);
-
             const isPasswordValid = await bcrypt.compare(password, user.password);
-            console.log("Resultado da comparação:", isPasswordValid);
 
             if(!isPasswordValid){
                 throw new Error(ERROR_INVALID_CREDENTIALS.message);
@@ -183,8 +197,13 @@ console.log("Hash salvo no banco:", user.password);
                 token
                 }
 
-            }catch(error){
-            console.error('Error during login:', error);
+            }catch(error: any){
+                if (
+            error.message === ERROR_INVALID_CREDENTIALS.message ||
+            error.message === ERROR_REQUIRED_FIELDS.message
+        ) {
+            throw error;
+        }
             throw new Error(ERROR_INTERNAL_SERVER_DB.message);
         }
     }
