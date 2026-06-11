@@ -14,6 +14,13 @@ import {
     UpdateExchangeGoalController,
     GetExchangeGoalController
 } from './controller/exchangeGoalController'
+import { 
+    CreateTransactionController, 
+    UpdateTransactionController,
+    DeleteTransactionController,
+    GetTransactionController,
+    GetTransactionByIdController 
+} from './controller/transactionController'
 import { authMiddleware } from './middleware/middlewareAuth'
 
 const router = Router()
@@ -55,6 +62,25 @@ router.get('/exchange-goal', authMiddleware, async (req: Request, res: Response)
 
 router.delete('/exchange-goal/:id_exchange_goal', authMiddleware, async (req: Request, res: Response) => 
     new DeleteExchangeGoalController().handle(req, res)
+)
+
+// Transaction Routes
+router.post('/transaction', authMiddleware, async (req: Request, res: Response) =>
+    new CreateTransactionController().handle(req, res)
+)
+router.put('/transaction/:id_transaction', authMiddleware, async (req: Request, res: Response) => 
+    new UpdateTransactionController().handle(req, res)
+)
+router.get('/transaction/:id_transaction', authMiddleware, async (req: Request, res: Response) => 
+    new GetTransactionByIdController().handle(req, res)
+)
+
+router.get('/transaction', authMiddleware, async (req: Request, res: Response) => 
+    new GetTransactionController().handle(req, res)
+)
+
+router.delete('/transaction/:id_transaction', authMiddleware, async (req: Request, res: Response) => 
+    new DeleteTransactionController().handle(req, res)
 )
 
 export default router
