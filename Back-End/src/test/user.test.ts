@@ -14,9 +14,19 @@ jest.mock('../conf/index', () => {
             findMany: jest.fn()
         },
         exchange_goals: {
+            findMany: jest.fn(),
+             findUnique: jest.fn(),
+             create: jest.fn(),
+             update: jest.fn(),
             deleteMany: jest.fn()
-        }
-    };
+        },
+        transactions: {
+            create: jest.fn(),
+             update: jest.fn(),
+             deleteMany: jest.fn(),
+             findMany: jest.fn()
+    }
+};
 
     return {
         __esModule: true,
@@ -102,6 +112,11 @@ describe('UpdateUserService', () => {
 
 describe('DeleteUserService', () => {
     it('Deve ser capaz de deletar um usuário com sucesso!', async () => {
+
+        (prismaClient.exchange_goals.findMany as jest.Mock).mockResolvedValue([
+            {id_exchange_goal: 'meta-12345-uuid',}
+        ]);
+
         (prismaClient.users.delete as jest.Mock).mockResolvedValue({
             id_user: '1',
             name: 'Usuário Deletado',
@@ -112,6 +127,10 @@ describe('DeleteUserService', () => {
         const result = await deleteUserService.execute('1');
 
         expect(result).toHaveProperty('id_user');
+        
+        expect(prismaClient.exchange_goals.findMany).toHaveBeenCalledTimes(1);
+        expect(prismaClient.exchange_goals.deleteMany).toHaveBeenCalledTimes(1);
+        expect(prismaClient.transactions.deleteMany).toHaveBeenCalledTimes(1);
         expect(prismaClient.users.delete).toHaveBeenCalledTimes(1);
     });
 });
