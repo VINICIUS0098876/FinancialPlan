@@ -97,6 +97,26 @@ export class DeleteUserService{
             // Utilizamos $transaction para garantir que o usuario seja deletado independentemente se tiver algo relacionado ao usuario ou não.
         const user = await prismaClient.$transaction(async (tx) => {
 
+            // Aqui eu estou fazendo um: select id_exchange_goal from exchange_goals where id_user = id_user.
+            const userGoals = await tx.exchange_goals.findMany({
+                where: { id_user: id_user },
+                select: {id_exchange_goal: true}
+            })
+
+            // Aqui estou pegando os ids listados no select acima e colocando em um array.
+            const goalIds = userGoals.map(goal => goal.id_exchange_goal)
+
+            // Essa condição esta dizendo: Se tiver metas(goals) relacionadas a esse usuario, pode deletar as transactions.
+            if(goalIds.length > 0){
+                await tx.transactions.deleteMany({
+                    where: {
+                        id_exchange_goal: {
+                            in: goalIds // Aqui esta dizendo: delete from transactions where id_exchange_goal in (list of goalIds) ou seja, delete todas as transações relacionadas as metas(goals) do usuario.
+                        }
+                    }
+                }) 
+            }
+            
             await tx.exchange_goals.deleteMany({
                 where: {
                     id_user: id_user
