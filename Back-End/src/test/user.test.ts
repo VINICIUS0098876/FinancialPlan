@@ -25,6 +25,13 @@ jest.mock('../conf/index', () => {
              update: jest.fn(),
              deleteMany: jest.fn(),
              findMany: jest.fn()
+        },
+        checklist_items: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        deleteMany: jest.fn(),
     }
 };
 
@@ -130,6 +137,7 @@ describe('DeleteUserService', () => {
         
         expect(prismaClient.exchange_goals.findMany).toHaveBeenCalledTimes(1);
         expect(prismaClient.exchange_goals.deleteMany).toHaveBeenCalledTimes(1);
+        expect(prismaClient.checklist_items.deleteMany).toHaveBeenCalledTimes(1);
         expect(prismaClient.transactions.deleteMany).toHaveBeenCalledTimes(1);
         expect(prismaClient.users.delete).toHaveBeenCalledTimes(1);
     });
