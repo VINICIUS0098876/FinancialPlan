@@ -22,6 +22,13 @@ import {
     GetTransactionByIdController 
 } from './controller/transactionController'
 import { authMiddleware } from './middleware/middlewareAuth'
+import { 
+    CreateCheckItemController, 
+    DeleteCheckItemController, 
+    GetCheckItemByIdController, 
+    GetCheckItemController, 
+    UpdateCheckItemController 
+} from './controller/checkItemController'
 
 const router = Router()
 
@@ -81,6 +88,24 @@ router.get('/transaction', authMiddleware, async (req: Request, res: Response) =
 
 router.delete('/transaction/:id_transaction', authMiddleware, async (req: Request, res: Response) => 
     new DeleteTransactionController().handle(req, res)
+)
+
+
+// Checklist Routes
+router.post('/checklist-item', authMiddleware, async (req: Request, res: Response) =>
+    new CreateCheckItemController().handle(req, res)
+)
+router.put('/checklist-item/:id_checklist_item', authMiddleware, async (req: Request, res: Response) => 
+    new UpdateCheckItemController().handle(req, res)
+)
+router.get('/checklist-item/:id_checklist_item', authMiddleware, async (req: Request, res: Response) => 
+    new GetCheckItemByIdController().handle(req, res)
+)
+router.get('/checklist-item', authMiddleware, async (req: Request, res: Response) => 
+    new GetCheckItemController().handle(req, res)
+)
+router.delete('/checklist-item/:id_checklist_item', authMiddleware, async (req: Request, res: Response) => 
+    new DeleteCheckItemController().handle(req, res)
 )
 
 export default router
