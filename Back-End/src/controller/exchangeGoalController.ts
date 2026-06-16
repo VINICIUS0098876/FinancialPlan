@@ -105,11 +105,17 @@ export class DeleteExchangeGoalController{
 }
 
 export class GetExchangeGoalController{
-    async handle(req: Request, res: Response){
+    async handle(req: AuthRequest, res: Response){
         try{
+            const id_user = req.id_user as string
+
+            if(!id_user){
+                return res.status(400).json({ message: ERROR_INVALID_ID.message });
+            }
+
             const getExchangeGoalService = new GetExchangeGoalService()
 
-            const exchangeGoals = await getExchangeGoalService.execute()
+            const exchangeGoals = await getExchangeGoalService.execute(id_user)
 
             if(!exchangeGoals || exchangeGoals.length === 0){
                 return res.status(404).json({ message: ERROR_NOT_FOUND.message });
@@ -133,7 +139,7 @@ export class GetExchangeGoalController{
 }
 
 export class GetExchangeGoalByIdController{
-    async handle(req: Request, res: Response){
+    async handle(req: AuthRequest, res: Response){
         try{
             const id_exchange_goal = req.params.id_exchange_goal as string
 

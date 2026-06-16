@@ -96,9 +96,29 @@ export class DeleteExchangeGoalService{
                 throw new Error(ERROR_NOT_FOUND.message);
             }
 
-            const exchangeGoal = await prismaClient.exchange_goals.delete({
-                where: { id_exchange_goal }
-            })
+            const exchangeGoal = await prismaClient.$transaction(async (tx) => {
+
+                await tx.checklist_items.deleteMany({
+                    where: {
+                        id_exchange_goal
+                    }
+                })
+
+                await tx.transactions.deleteMany({
+                    where: {
+                        id_exchange_goal
+                    }
+                })
+
+                const goal = await tx.exchange_goals.delete({
+                    where: {
+                        id_exchange_goal
+                    }
+                })
+
+                return goal
+
+                })
 
             return exchangeGoal
 
@@ -113,14 +133,16 @@ export class DeleteExchangeGoalService{
 }
 
 export class GetExchangeGoalService{
-    async execute(){
+    async execute(id_user: string){
         try{
 
-            const exchangeGoal = await prismaClient.exchange_goals.findMany()
+            const exchangeGoal = await prismaClient.exchange_goals.findMany({
+                where: {
+                    id_user
+                }
+            })
 
-            if(exchangeGoal.length === 0){
-                throw new Error(ERROR_NOT_FOUND.message);
-            }
+            
 
             return exchangeGoal
 
@@ -128,6 +150,11 @@ export class GetExchangeGoalService{
             if (error.message === ERROR_NOT_FOUND.message) {
                 throw error;
             }
+
+            if(error.message === ERROR_INVALID_ID.message){
+                throw error;
+            }
+            
             console.error("Error fetching exchange goal:", error);
             throw new Error(ERROR_INTERNAL_SERVER_DB.message);
         }
