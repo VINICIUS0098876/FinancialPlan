@@ -108,12 +108,15 @@ import { AuthRequest } from '../middleware/middlewareAuth';
  }
 
  export class GetTransactionController{
-    async handle(req: Request, res: Response){
+    async handle(req: AuthRequest, res: Response){
         try{
+
+            const id_user = req.id_user as string
+
             const getTransactionService = new GetTransactionService()
 
-            const transaction = await getTransactionService.execute()
-
+            const transaction = await getTransactionService.execute(id_user)
+            
             if(!transaction || transaction.length === 0){
                 return res.status(404).json({ message: ERROR_NOT_FOUND.message });
             }

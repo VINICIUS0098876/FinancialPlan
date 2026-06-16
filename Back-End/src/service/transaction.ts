@@ -106,18 +106,35 @@ export class UpdateTransactionService{
 }
 
 export class GetTransactionService{
-    async execute(){
+    async execute(id_user: string){
         try{
-            const transaction = await prismaClient.transactions.findMany()
 
-            if(transaction.length === 0){
-                throw new Error(ERROR_NOT_FOUND.message);
-            }
+            const userGoals = await prismaClient.exchange_goals.findMany({
+                where: {
+                    id_user
+                }
+            })
+
+            const goalIds = userGoals.map(goal => goal.id_exchange_goal);
+
+
+            const transaction = await prismaClient.transactions.findMany({
+                where: {
+                    id_exchange_goal: {
+                        in: goalIds
+                    }
+                }
+            })
+
 
             return transaction
 
         }catch(error: any){
             if (error.message === ERROR_NOT_FOUND.message) {
+                throw error;
+            }
+
+            if (error.message === ERROR_INVALID_ID.message) {
                 throw error;
             }
             console.error(error)

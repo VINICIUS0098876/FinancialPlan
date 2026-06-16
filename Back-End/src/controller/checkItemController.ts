@@ -22,7 +22,7 @@ export class CreateCheckItemController{
         try{
             const {id_exchange_goal, title, description, status, due_date} = req.body
 
-            if(!id_exchange_goal || !title || !status || !due_date){
+            if(!id_exchange_goal || !title ){
                 return res.status(400).json({ message: ERROR_REQUIRED_FIELDS.message });
             }
 
@@ -56,7 +56,7 @@ export class UpdateCheckItemController{
                 return res.status(400).json({ message: ERROR_INVALID_ID.message });
             }
 
-            if(!id_exchange_goal || !title || !status || !due_date){
+            if(!id_exchange_goal || !title){
                 return res.status(400).json({ message: ERROR_REQUIRED_FIELDS.message });
             }
 
@@ -114,9 +114,15 @@ export class DeleteCheckItemController{
 export class GetCheckItemController{
     async handle(req: AuthRequest, res: Response){
         try{
+            const id_user = req.id_user as string
+
+            if(!id_user){
+                return res.status(400).json({ message: ERROR_INVALID_ID.message });
+            }
+
             const getCheckItemService = new GetCheckItemService()
 
-            const checkItem = await getCheckItemService.execute()
+            const checkItem = await getCheckItemService.execute(id_user)
 
             if(!checkItem || checkItem.length === 0){
                 return res.status(404).json({ message: ERROR_NOT_FOUND.message });
@@ -128,6 +134,11 @@ export class GetCheckItemController{
             if (error.message === ERROR_NOT_FOUND.message) {
                 return res.status(404).json({ message: error.message });
             }
+
+            if(error.message === ERROR_INVALID_ID.message){
+                return res.status(400).json({ message: error.message });
+            }
+
             console.error('Error getting check items:', error);
             return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
         }
