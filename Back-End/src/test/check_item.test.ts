@@ -24,7 +24,8 @@ jest.mock('../conf/index', () => ({
             delete: jest.fn(),
         },
         exchange_goals: {
-            findUnique: jest.fn(),
+            findMany: jest.fn().mockResolvedValue([{ id_exchange_goal: "mock-id" }]),
+            findUnique: jest.fn().mockResolvedValue(true),
         }
     },
 }))
@@ -291,7 +292,7 @@ describe('GetCheckItemService', () => {
 
         const getCheckItemService = new GetCheckItemService()
 
-        const result = await getCheckItemService.execute()
+        const result = await getCheckItemService.execute("mocked-user-id")
 
         expect(result).toHaveLength(2)
         expect(prismaClient.checklist_items.findMany).toHaveBeenCalledTimes(1)
@@ -302,9 +303,9 @@ describe('GetCheckItemService', () => {
 
         const getCheckItemService = new GetCheckItemService()
 
-        const result = getCheckItemService.execute()
+        const result = await getCheckItemService.execute("mocked-user-id")
 
-        await expect(result).rejects.toThrow(ERROR_NOT_FOUND.message)
+        expect(result).toEqual([])
         expect(prismaClient.checklist_items.findMany).toHaveBeenCalledTimes(1)
     })
 })

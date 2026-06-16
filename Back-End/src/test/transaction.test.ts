@@ -19,8 +19,9 @@ jest.mock('../conf/index', () => ({
             findMany: jest.fn()
         },
     exchange_goals: {
-        findUnique: jest.fn()
-    }
+            findMany: jest.fn().mockResolvedValue([{ id_exchange_goal: "mock-id" }]),
+            findUnique: jest.fn().mockResolvedValue(true),
+        }
     }
 }))
 
@@ -241,7 +242,7 @@ describe('GetTransactionService', () => {
 
         const getTransactionService = new GetTransactionService()
 
-        const result = await getTransactionService.execute()
+        const result = await getTransactionService.execute("mocked-user-id")
 
         expect(result).toHaveLength(2)
 
@@ -253,10 +254,9 @@ describe('GetTransactionService', () => {
 
         const getTransactionService = new GetTransactionService()
 
-        const result = getTransactionService.execute()
+        const result = await getTransactionService.execute("mocked-user-id")
 
-        await expect(result).rejects.toThrow(ERROR_NOT_FOUND.message)
-
+        expect(result).toEqual([])
         expect(prismaClient.transactions.findMany).toHaveBeenCalledTimes(1)
     })
 })
