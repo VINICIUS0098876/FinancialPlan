@@ -158,15 +158,25 @@ export class DeleteCheckItemService{
 }
 
 export class GetCheckItemService{
-    async execute(){
+    async execute(id_user: string){
         try{
-            const checkItem = await prismaClient.checklist_items.findMany()
+            const userGoals = await prismaClient.exchange_goals.findMany({
+                where: {
+                    id_user
+                }
+            })
 
-            if(checkItem.length === 0){
-                 throw new Error(ERROR_NOT_FOUND.message);
-            }
+            const checkItemIds = userGoals.map(goal => goal.id_exchange_goal)
 
-            return checkItem
+            const checklistItems = await prismaClient.checklist_items.findMany({
+                where: {
+                    id_exchange_goal: {
+                        in: checkItemIds
+                    }
+                }
+             })
+
+            return checklistItems
 
         }catch(error: any){
             if (error.message === ERROR_NOT_FOUND.message) {

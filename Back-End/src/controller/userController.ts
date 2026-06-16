@@ -195,7 +195,7 @@ export class LoginUserController{
                 return res.status(401).json({ message: ERROR_INVALID_CREDENTIALS.message });
             }
 
-            return res.status(200).json({ message: SUCCESS_LOGIN_ITEM.message, token: user.token });
+            return res.status(200).json({ message: SUCCESS_LOGIN_ITEM.message, token: user.token, user: user.user });
         
         }catch(error: any){
             if (error.message === ERROR_REQUIRED_FIELDS.message) {

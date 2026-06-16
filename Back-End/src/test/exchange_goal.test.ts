@@ -11,6 +11,9 @@ import { ERROR_NOT_FOUND, ERROR_REQUIRED_FIELDS } from '../utils/message';
 jest.mock('../conf/index', () => ({
     __esModule: true,
     default: {
+        $transaction: jest.fn(async (callback) => await callback(require("../conf/index").default)),
+        checklist_items: { deleteMany: jest.fn() },
+        transactions: { deleteMany: jest.fn() },
         exchange_goals:{
             findUnique: jest.fn(),
             create: jest.fn(),
@@ -196,7 +199,7 @@ describe('GetExchangeGoalService', () => {
 
         const getExchangeGoalService = new GetExchangeGoalService()
 
-        const result = await getExchangeGoalService.execute()
+        const result = await getExchangeGoalService.execute("mocked-user-id")
 
         expect(result).toHaveLength(2)
 
@@ -208,10 +211,10 @@ describe('GetExchangeGoalService', () => {
 
         const getExchangeGoalService = new GetExchangeGoalService()
 
-        const result = getExchangeGoalService.execute()
+        const result = await getExchangeGoalService.execute("mocked-user-id")
 
-        await expect(result).rejects.toThrow(ERROR_NOT_FOUND.message)
-
+        
+        expect(result).toEqual([])
         expect(prismaClient.exchange_goals.findMany).toHaveBeenCalledTimes(1)
     })
 })
