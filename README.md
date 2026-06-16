@@ -333,7 +333,7 @@ Se você tiver dúvidas, sugestões ou enfrentar problemas, sinta-se livre para:
 
 <div align="center">
 
-**Desenvolvido com ❤️ por Vinicius**
+**Desenvolvido por Vinicius**
 
 ⭐ Se este projeto foi útil para você, considere deixar uma estrela no repositório!
 
