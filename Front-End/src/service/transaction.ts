@@ -6,6 +6,7 @@ export type PlatformType = 'WISE' | 'NOMAD' | 'CASH' | 'OTHER';
 export interface Transaction {
   id_transaction?: string;
   id_exchange_goal: string;
+  category: string;
   description: string;
   amount_brl: number;
   exchange_rate: number;

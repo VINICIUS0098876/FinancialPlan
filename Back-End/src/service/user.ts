@@ -131,6 +131,12 @@ export class DeleteUserService{
                 }
             })
 
+            await tx.budgets.deleteMany({
+                where: {
+                    id_user: id_user
+                }
+            })
+
             const deletedUser = await tx.users.delete({
                 where: {
                     id_user: id_user

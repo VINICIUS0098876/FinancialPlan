@@ -5,6 +5,7 @@ import {
   ERROR_INVALID_ID,
   ERROR_REQUIRED_FIELDS,
 } from "../utils/message"
+import axios from "axios";
 
 
 interface ExchangeGoal{
@@ -184,6 +185,39 @@ export class GetExchangeGoalByIdService{
                 throw error;
             }
             console.error("Error fetching exchange goal by id:", error);
+            throw new Error(ERROR_INTERNAL_SERVER_DB.message);
+        }
+    }
+}
+
+export class GetExchangeRateService{
+    async execute(){
+        try{
+            const apiKey = process.env.AWESOME_API_KEY;
+
+            if(!apiKey){
+                throw new Error("Token da AwesomeAPI não configurado no servidor.");
+            }
+
+            const url = `https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,BTC-BRL,CHF-BRL?token=${apiKey}`;
+
+            const response = await axios.get(url)
+
+            if(!response.data || !response.data.USDBRL || !response.data.EURBRL || !response.data.BTCBRL || !response.data.CHFBRL){
+                throw new Error("Resposta inválida da API de câmbio.");
+            }
+
+            const formattedResponse = {
+                USDBRL: {code: response.data.USDBRL.bid},
+                EURBRL: {code: response.data.EURBRL.bid},
+                BTCBRL: {code: response.data.BTCBRL.bid},
+                CHFBRL: {code: response.data.CHFBRL.bid}
+             }
+
+             return formattedResponse
+            
+        }catch(error: any){
+            console.error("Error fetching exchange rate:", error);
             throw new Error(ERROR_INTERNAL_SERVER_DB.message);
         }
     }

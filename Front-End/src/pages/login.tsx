@@ -119,9 +119,10 @@ export default function Login() {
             <div className="space-y-2 text-left">
               <div className="flex justify-between items-center">
                 <label className="text-sm font-semibold text-slate-700">Senha</label>
-                <a href="#" className="text-sm text-emerald-600 hover:underline font-medium">
+                {/* O LINK FOI ATUALIZADO AQUI 👇 */}
+                <Link to="/forgot-password" className="text-sm text-emerald-600 hover:underline font-medium">
                   Esqueceu a senha?
-                </a>
+                </Link>
               </div>
               <div className="relative">
                   <Input 
