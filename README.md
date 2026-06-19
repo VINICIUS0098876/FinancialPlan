@@ -321,11 +321,11 @@ Se você tiver dúvidas, sugestões ou enfrentar problemas, sinta-se livre para:
 
 ## 🎯 Roadmap Futuro
 
-- [ ] Integração com APIs de câmbio em tempo real
+- [x] Integração com APIs de câmbio em tempo real
 - [ ] Sistema de notificações e lembretes
-- [ ] Relatórios financeiros e gráficos avançados
+- [x] Relatórios financeiros e gráficos avançados
 - [ ] Compartilhamento de metas com amigos
-- [ ] Suporte a múltiplos idiomas
+- [x] Suporte a múltiplos idiomas
 - [ ] Aplicativo mobile nativo (React Native)
 - [ ] Integração com calendário (Google Calendar, Outlook)
 
