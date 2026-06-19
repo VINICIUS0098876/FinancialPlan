@@ -8,6 +8,7 @@ import {
 
 interface Transaction{
     id_exchange_goal: string,
+    category?: string,
     description: string,
     amount_brl: number,
     exchange_rate: number,
@@ -16,7 +17,7 @@ interface Transaction{
 }
 
 export class CreateTransactionService{
-    async execute({id_exchange_goal, description, amount_brl, exchange_rate, amount_foreign, platform}: Transaction){
+    async execute({id_exchange_goal, category, description, amount_brl, exchange_rate, amount_foreign, platform}: Transaction){
 try{
 
         if(!id_exchange_goal || !description || amount_brl == null || exchange_rate == null || amount_foreign == null || !platform){
@@ -36,6 +37,7 @@ try{
             const transaction = await prismaClient.transactions.create({
                 data: {
                     id_exchange_goal,
+                    category,
                     description,
                     amount_brl,
                     exchange_rate,

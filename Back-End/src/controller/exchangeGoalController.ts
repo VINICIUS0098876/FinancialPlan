@@ -1,6 +1,6 @@
 import {Request, Response} from 'express'
 import { AuthRequest} from '../middleware/middlewareAuth'
-import {CreateExchangeGoalService, UpdateExchangeGoalService, DeleteExchangeGoalService, GetExchangeGoalService, GetExchangeGoalByIdService} from '../service/exchange_goal'
+import {CreateExchangeGoalService, GetExchangeRateService ,UpdateExchangeGoalService, DeleteExchangeGoalService, GetExchangeGoalService, GetExchangeGoalByIdService} from '../service/exchange_goal'
 import {
   ERROR_NOT_FOUND,
   ERROR_INTERNAL_SERVER,
@@ -117,10 +117,6 @@ export class GetExchangeGoalController{
 
             const exchangeGoals = await getExchangeGoalService.execute(id_user)
 
-            if(!exchangeGoals || exchangeGoals.length === 0){
-                return res.status(404).json({ message: ERROR_NOT_FOUND.message });
-            }
-
             return res.status(200).json(exchangeGoals);
 
         }catch(error: any){
@@ -166,6 +162,23 @@ export class GetExchangeGoalByIdController{
                 return res.status(400).json({ message: error.message });
             }
             console.error('Error getting exchange goal by ID:', error);
+            return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
+        }
+    }
+}
+
+export class GetExchangeRateController{
+    async handle(req: AuthRequest, res: Response){
+        try{
+
+            const getExchangeRateService = new GetExchangeRateService()
+
+            const exchangeRate = await getExchangeRateService.execute()
+
+            return res.status(200).json( exchangeRate );
+            
+        }catch(error: any){
+            console.error('Error getting exchange rate:', error);
             return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
         }
     }

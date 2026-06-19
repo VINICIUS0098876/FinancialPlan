@@ -1,5 +1,5 @@
 // src/service/user.ts
-import { getRequest, putRequest, deleteRequest } from "./api";
+import { getRequest, putRequest, deleteRequest, postRequest } from "./api";
 
 export const getUserById = async (id_user: string) => {
   try {
@@ -33,4 +33,22 @@ export const deleteUser = async (id_user: string) => {
     console.error("Erro ao excluir usuário:", error);
     throw error;
   }
+};
+
+export const requestPasswordReset = async (email: string) => {
+  const response = await postRequest("/user/forgot-password", { email });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Erro ao solicitar recuperação");
+  }
+  return await response.json();
+};
+
+export const resetPassword = async (token: string, new_password: string) => {
+  const response = await postRequest("/user/reset-password", { token, new_password });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Erro ao redefinir senha");
+  }
+  return await response.json();
 };

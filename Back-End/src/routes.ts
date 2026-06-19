@@ -5,14 +5,17 @@ import {
     LoginUserController, 
     DeleteUserController, 
     GetUserController, 
-    GetUserByIdController 
+    GetUserByIdController,
+    RequestPasswordResetController,
+    ResetPasswordController
 } from './controller/userController'
 import { 
     CreateExchangeGoalController, 
     DeleteExchangeGoalController, 
     GetExchangeGoalByIdController, 
     UpdateExchangeGoalController,
-    GetExchangeGoalController
+    GetExchangeGoalController,
+    GetExchangeRateController
 } from './controller/exchangeGoalController'
 import { 
     CreateTransactionController, 
@@ -29,6 +32,11 @@ import {
     GetCheckItemController, 
     UpdateCheckItemController 
 } from './controller/checkItemController'
+import{
+    UpsertBudgetController,
+    GetBudgetController,
+    DeleteBudgetController
+} from './controller/budgetController'
 
 const router = Router()
 
@@ -52,6 +60,14 @@ router.post('/user/login', async (req: Request, res: Response) =>
     new LoginUserController().handle(req, res)
 )
 
+router.post('/user/forgot-password', async (req: Request, res: Response) => 
+    new RequestPasswordResetController().handle(req, res)
+);
+
+router.post('/user/reset-password', async (req: Request, res: Response) => {
+    return new ResetPasswordController().handle(req, res);
+});
+
 // Exchange Goal Routes
 router.post('/exchange-goal', authMiddleware, async (req: Request, res: Response) =>
     new CreateExchangeGoalController().handle(req, res)
@@ -69,6 +85,10 @@ router.get('/exchange-goal', authMiddleware, async (req: Request, res: Response)
 
 router.delete('/exchange-goal/:id_exchange_goal', authMiddleware, async (req: Request, res: Response) => 
     new DeleteExchangeGoalController().handle(req, res)
+)
+
+router.get('/exchange-rate', authMiddleware, async (req: Request, res: Response) => 
+    new GetExchangeRateController().handle(req, res)
 )
 
 // Transaction Routes
@@ -106,6 +126,17 @@ router.get('/checklist-item', authMiddleware, async (req: Request, res: Response
 )
 router.delete('/checklist-item/:id_checklist_item', authMiddleware, async (req: Request, res: Response) => 
     new DeleteCheckItemController().handle(req, res)
+)
+
+// Budget Routes
+router.post('/budget', authMiddleware, async (req: Request, res: Response) =>
+    new UpsertBudgetController().handle(req, res)
+)
+router.get('/budget', authMiddleware, async (req: Request, res: Response) =>
+    new GetBudgetController().handle(req, res)
+)
+router.delete('/budget/:id_budget', authMiddleware, async (req: Request, res: Response) =>
+    new DeleteBudgetController().handle(req, res)
 )
 
 export default router
