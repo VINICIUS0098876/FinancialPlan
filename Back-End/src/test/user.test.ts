@@ -32,6 +32,13 @@ jest.mock('../conf/index', () => {
         findMany: jest.fn(),
         update: jest.fn(),
         deleteMany: jest.fn(),
+    },
+    budgets: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        findMany: jest.fn(),
+        deleteMany: jest.fn(),
+        update: jest.fn(),
     }
 };
 

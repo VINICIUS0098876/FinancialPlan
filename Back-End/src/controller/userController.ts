@@ -21,6 +21,7 @@ import {
   ERROR_INVALID_CREDENTIALS,
   ERROR_CONFLICT,
 } from "../utils/message";
+import { RequestPasswordResetService, ResetPasswordService } from '../service/passwordReset';
 
 export class CreateUserController{
     async handle(req: Request, res: Response){
@@ -207,6 +208,52 @@ export class LoginUserController{
         }
             console.error('Error logging in user:', error);
             return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
+        }
+    }
+}
+
+export class RequestPasswordResetController{
+    async handle(req: Request, res: Response){
+        try{
+            const {email} = req.body
+
+            const requestPasswordResetService = new RequestPasswordResetService()
+
+            const result = await requestPasswordResetService.execute(email)
+
+            return res.status(200).json(result)
+
+        }catch(error: any){
+            if (error.message === ERROR_REQUIRED_FIELDS.message) {
+                return res.status(400).json({ message: error.message });
+            }
+        console.error('Error resetting password:', error);
+        return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
+        }
+    }
+}
+
+export class ResetPasswordController{
+    async handle(req: Request, res: Response){
+        try{
+            const {token, new_password} = req.body
+
+            if(!token || !new_password){
+                return res.status(400).json({ message: ERROR_REQUIRED_FIELDS.message });
+            }
+
+            const resetPasswordService = new ResetPasswordService()
+
+            const result = await resetPasswordService.handle(token, new_password)
+
+            return res.status(200).json(result)
+
+        }catch(error: any){
+            if (error.message === ERROR_REQUIRED_FIELDS.message) {
+                return res.status(400).json({ message: error.message });
+            }
+        console.error('Error resetting password:', error);
+        return res.status(500).json({ message: ERROR_INTERNAL_SERVER.message });
         }
     }
 }

@@ -21,7 +21,7 @@ import { AuthRequest } from '../middleware/middlewareAuth';
  export class CreateTransactionController{
     async handle(req: Request, res: Response){
     try{
-        const {id_exchange_goal, description, amount_brl, exchange_rate, amount_foreign, platform} = req.body
+        const {id_exchange_goal, category, description, amount_brl, exchange_rate, amount_foreign, platform} = req.body
 
         if(!id_exchange_goal || !description || amount_brl == null || exchange_rate == null || amount_foreign == null || !platform){
             return res.status(400).json({ message: ERROR_REQUIRED_FIELDS.message });
@@ -29,7 +29,7 @@ import { AuthRequest } from '../middleware/middlewareAuth';
 
         const createTransactionService = new CreateTransactionService()
 
-        const transaction = await createTransactionService.execute({id_exchange_goal, description, amount_brl, exchange_rate, amount_foreign, platform})
+        const transaction = await createTransactionService.execute({id_exchange_goal, category, description, amount_brl, exchange_rate, amount_foreign, platform})
 
         return res.status(201).json({ message: SUCCESS_CREATED_ITEM.message, transaction });
         
@@ -52,7 +52,7 @@ import { AuthRequest } from '../middleware/middlewareAuth';
         try{
             const id_transaction = req.params.id_transaction as string
 
-            const {id_exchange_goal, description, amount_brl, exchange_rate, amount_foreign, platform} = req.body
+            const {id_exchange_goal, category, description, amount_brl, exchange_rate, amount_foreign, platform} = req.body
 
             if(!id_transaction){
                 return res.status(400).json({ message: ERROR_INVALID_ID.message });
@@ -64,7 +64,7 @@ import { AuthRequest } from '../middleware/middlewareAuth';
 
             const updateTransactionService = new UpdateTransactionService()
 
-            const transaction = await updateTransactionService.execute(id_transaction, {id_exchange_goal, description, amount_brl, exchange_rate, amount_foreign, platform})
+            const transaction = await updateTransactionService.execute(id_transaction, {id_exchange_goal, category, description, amount_brl, exchange_rate, amount_foreign, platform})
 
             return res.status(200).json({ message: SUCCESS_UPDATED_ITEM.message, transaction });
 
@@ -117,10 +117,6 @@ import { AuthRequest } from '../middleware/middlewareAuth';
 
             const transaction = await getTransactionService.execute(id_user)
             
-            if(!transaction || transaction.length === 0){
-                return res.status(404).json({ message: ERROR_NOT_FOUND.message });
-            }
-
             return res.status(200).json(transaction);
 
         }catch(error: any){

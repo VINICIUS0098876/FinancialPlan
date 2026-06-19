@@ -72,3 +72,19 @@ export const updateExchangeGoal = async (id_exchange_goal: string, goalData: {
     throw error;
   }
 };
+
+export const getExchangeRate = async () => {
+  try{
+    const response = await getRequest("/exchange-rate")
+
+    if(!response.ok) throw new Error("Erro ao buscar taxa de câmbio");
+
+    const data = await response.json();
+
+    return data;
+
+  }catch(error){
+    console.error("Erro ao buscar taxa de câmbio:", error);
+    throw error;
+  }
+}
